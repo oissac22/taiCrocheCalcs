@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
+import { Template } from "../../../template";
 import { DTOList, useListProdutos } from "../../hooks/list"
 import { serviceDeleteItem } from "./service";
 import style from './style.module.css'
@@ -57,7 +58,7 @@ export function ListProductsPayment() {
         router.push(`/item/_`)
     }, [router])
 
-    return <div>
+    return <Template>
         <Head>
             <title>Lista de items comprados</title>
             <link rel="icon" href="/favicon.ico" />
@@ -86,6 +87,6 @@ export function ListProductsPayment() {
         <div>
             <button onClick={handleNewUser}>Adicionar novo</button>
         </div>
-    </div>
+    </Template>
 
 }

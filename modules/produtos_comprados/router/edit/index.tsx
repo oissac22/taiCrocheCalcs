@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Template } from '../../../template';
 import { DTOEditItem, DTOInsertItem, serviceEditItem, serviceGetItemDataById, serviceInsertItem } from './service';
 import style from './style.module.css'
 
@@ -111,7 +112,7 @@ export function RouterEditProductsPayment() {
         }
     }, [id, inputsData])
 
-    return <div>
+    return <Template>
         <p>
             {id !== '_' ? 'Editar registro' : 'Inserir registro'}
         </p>
@@ -127,6 +128,6 @@ export function RouterEditProductsPayment() {
                 </div>
             </div>
         </form>
-    </div>
+    </Template>
 
 }

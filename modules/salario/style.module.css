@@ -1,0 +1,39 @@
+.TextInput {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+}
+
+.TextInput>div:first-child {
+    text-transform: uppercase;
+}
+
+.TextInput>div {
+    display: flex;
+}
+
+.TextInput>div>* {
+    flex: 1;
+}
+
+.form {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 100%;
+    width: 300px;
+}
+
+.container {
+    text-align: center;
+}
+
+.formButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.formButtons button {
+    flex: 1;
+}

@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+    border-bottom: solid 1px rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.menu a {
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+.menu a:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.area {
+    flex: 1;
+    padding: 20px;
+}
