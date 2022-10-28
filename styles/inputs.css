@@ -1,0 +1,21 @@
+input {
+    padding: 10px;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+    outline: #07a;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #07a;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 4px;
+    text-transform: uppercase;
+    min-width: 100px;
+    cursor: pointer;
+}
+
+button[color="red"] {
+    background-color: #a00;
+}
