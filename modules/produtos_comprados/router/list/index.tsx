@@ -1,13 +1,20 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
+import { dbPurchasedItems, TDataPurchasedItems } from "../../../database";
 import { Template } from "../../../template";
-import { DTOList, useListProdutos } from "../../hooks/list"
-import { serviceDeleteItem } from "./service";
+import { useListProdutos } from "../../hooks/list"
 import style from './style.module.css'
 
+function formatMoeda(value: string | number) {
+    value = `${value || 0}`.replace(/\./, ',');
+    if (!/,/.test(value)) value += ',00';
+    value = (value + '00').replace(/(,..).+$/, '$1');
+    return `R$ ${value}`;
+}
+
 interface IPropsItem {
-    data: DTOList,
+    data: TDataPurchasedItems,
     refresh: () => void,
 }
 
@@ -20,7 +27,7 @@ function Item({ data, refresh }: IPropsItem) {
     const handleDelete = useCallback(() => {
         if (!window.confirm('Deseja realmente deletar ' + name + '?'))
             return;
-        serviceDeleteItem(_id)
+        dbPurchasedItems.delete(_id)
             .then((result) => {
                 refresh()
             }).catch((err) => {
@@ -33,10 +40,9 @@ function Item({ data, refresh }: IPropsItem) {
     }, [_id])
 
     return <tr>
-        <td>{_id}</td>
         <td>{name}</td>
         <td>{peso}</td>
-        <td>{preco}</td>
+        <td>{formatMoeda(preco)}</td>
         <td>{detalhes}</td>
         <td>
             <div className={style.listButtons}>
@@ -67,7 +73,6 @@ export function ListProductsPayment() {
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nome</th>
                     <th>Peso/unidade</th>
                     <th>Preço</th>
@@ -78,7 +83,7 @@ export function ListProductsPayment() {
             <tbody>
                 {
                     list.list.map(data => {
-                        return <Item data={data} refresh={list.refresh} />
+                        return <Item data={data} refresh={list.refresh} key={data._id} />
                     })
                 }
             </tbody>

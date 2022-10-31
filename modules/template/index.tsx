@@ -15,6 +15,10 @@ export function Template({ children }: any) {
                 Salário
             </Link>
 
+            <Link href="/product/list">
+                Produtos
+            </Link>
+
         </div>
 
         <div className={style.area}>

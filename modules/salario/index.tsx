@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router'
 import { FormEvent, useCallback, useEffect, useRef } from 'react'
+import { dbSalary, TDataSalary } from '../database'
 import { Template } from '../template'
-import { DTOSalary, readSalary, updateSalary } from './services'
 import style from './style.module.css'
+
+export const ID_IN_DATABASE = 'id_salary_base';
 
 interface IPropsTextInput {
     caption: string,
@@ -27,7 +29,7 @@ type TDataInfos = {
     refDaysByMonth: number,
 }
 
-function useData() {
+function useData(_id: string) {
     const refSalary = useRef<HTMLInputElement>(null);
     const refDaysByMonth = useRef<HTMLInputElement>(null);
 
@@ -35,10 +37,11 @@ function useData() {
     const refSalaryByDay = useRef<HTMLInputElement>(null);
     const refSalaryByHours = useRef<HTMLInputElement>(null);
 
-    const get = useCallback(() => {
+    const get = useCallback((): TDataSalary => {
         return {
-            salary: Number(refSalary.current?.value || 0),
-            daysByMonth: Number(refDaysByMonth.current?.value || 0),
+            _id,
+            salaryByMonth: Number(refSalary.current?.value || 2000),
+            dayFromJobByMonth: Number(refDaysByMonth.current?.value || 22),
         }
     }, []);
 
@@ -52,17 +55,17 @@ function useData() {
     const handleOnChange = useCallback(() => {
         const data = get();
         if (refSalaryWeek.current)
-            refSalaryWeek.current.value = `${data.salary / 4 * 0.933}`;
+            refSalaryWeek.current.value = `${data.salaryByMonth / 4 * 0.933}`;
         if (refSalaryByDay.current)
-            refSalaryByDay.current.value = `${data.salary / data.daysByMonth}`;
+            refSalaryByDay.current.value = `${data.salaryByMonth / data.dayFromJobByMonth}`;
         if (refSalaryByHours.current)
-            refSalaryByHours.current.value = `${data.salary / data.daysByMonth / 8}`;
+            refSalaryByHours.current.value = `${data.salaryByMonth / data.dayFromJobByMonth / 8}`;
     }, [])
 
     useEffect(() => {
-        readSalary()
+        dbSalary.findById(ID_IN_DATABASE)
             .then((result) => {
-                set(result.salaryByMonth, result.dayFromJobByMonth);
+                set(result?.salaryByMonth || 2000, result?.dayFromJobByMonth || 22);
                 handleOnChange();
             }).catch((err) => {
                 window.alert(`${err}`);
@@ -90,12 +93,12 @@ export function RouterSalario() {
 
     const router = useRouter();
 
-    const dataInfos = useData();
+    const dataInfos = useData(ID_IN_DATABASE);
 
     const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const data = dataInfos.get();
-        updateSalary(new DTOSalary(data.salary, data.daysByMonth))
+        dbSalary.insertOrUpdate(data, ID_IN_DATABASE)
             .then((result) => {
                 window.alert('salvo com sucesso')
             }).catch((err) => {

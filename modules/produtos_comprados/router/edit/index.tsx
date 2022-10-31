@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useRef } from 'react'
+import { dbPurchasedItems, TDataPurchasedItems } from '../../../database';
 import { Template } from '../../../template';
-import { DTOEditItem, DTOInsertItem, serviceEditItem, serviceGetItemDataById, serviceInsertItem } from './service';
 import style from './style.module.css'
 
 
@@ -13,16 +13,19 @@ function useInputsData() {
     const refPreco = useRef<HTMLInputElement>(null);
     const refDetalhes = useRef<HTMLInputElement>(null);
 
-    const get = useCallback(() => {
+    const router = useRouter();
+
+    const get = useCallback((): TDataPurchasedItems => {
         return {
+            _id: (router.query.id || '') + '',
             name: refName.current?.value || '',
-            peso: Number(refPeso.current?.value || 0),
-            preco: Number(refPreco.current?.value || 0),
+            peso: Number((refPeso.current?.value || '0').replace(/,/, '.')),
+            preco: Number((refPreco.current?.value || '0').replace(/,/, '.')),
             detalhes: refDetalhes.current?.value || '',
         }
     }, [refName, refPeso, refPreco, refDetalhes]);
 
-    const set = useCallback((data: DTOEditItem) => {
+    const set = useCallback((data: TDataPurchasedItems) => {
         if (refName.current)
             refName.current.value = data.name;
         if (refPeso.current)
@@ -54,14 +57,7 @@ export function RouterEditProductsPayment() {
 
     const insertItem = useCallback(() => {
         const data = inputsData.get();
-        const object = new DTOInsertItem(
-            '',
-            data.name,
-            data.peso,
-            data.preco,
-            data.detalhes
-        );
-        serviceInsertItem(object)
+        dbPurchasedItems.insert(data)
             .then((result) => {
                 window.alert('salvo com sucesso');
                 router.push('/item')
@@ -72,13 +68,7 @@ export function RouterEditProductsPayment() {
 
     const editItem = useCallback(() => {
         const data = inputsData.get();
-        const object = new DTOEditItem(
-            data.name,
-            data.peso,
-            data.preco,
-            data.detalhes
-        );
-        serviceEditItem(id as string, object)
+        dbPurchasedItems.update(id + '', data)
             .then((result) => {
                 window.alert('salvo com sucesso');
                 router.push('/item')
@@ -89,7 +79,7 @@ export function RouterEditProductsPayment() {
 
     const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (id === '_') {
+        if (!id || id === '_') {
             insertItem()
         } else {
             editItem()
@@ -102,7 +92,7 @@ export function RouterEditProductsPayment() {
 
     useEffect(() => {
         if (id !== '_') {
-            serviceGetItemDataById(id as string)
+            dbPurchasedItems.findById(id as string)
                 .then((result) => {
                     if (!result) return;
                     inputsData.set(result)
