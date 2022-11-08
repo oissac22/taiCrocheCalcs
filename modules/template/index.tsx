@@ -19,6 +19,10 @@ export function Template({ children }: any) {
                 Produtos
             </Link>
 
+            <Link href="/backup">
+                Backup
+            </Link>
+
         </div>
 
         <div className={style.area}>

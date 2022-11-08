@@ -1,4 +1,5 @@
 import { v4 } from 'uuid';
+import { IMemoryDatabase, IMemoryDatabaseBackups } from '../interfaces';
 
 const START_NAME_STORAGE = 'db_af48re792w';
 
@@ -21,7 +22,32 @@ class EventMemory {
 
 }
 
-class MemoryDatabase<T extends TBasicData> {
+export class MemoryDatabaseBackups implements IMemoryDatabaseBackups {
+
+    static listDatabasesMemory: { [key: string]: string } = {}
+
+    get listDatabase() {
+        return Object.keys(MemoryDatabaseBackups.listDatabasesMemory)
+    }
+
+    createBackupJsonString(): string {
+        const list = this.listDatabase;
+        const result = list.reduce<{ [key: string]: any }>((result, databaseName) => {
+            result[databaseName] = JSON.parse(localStorage.getItem(databaseName) || '{}')
+            return result;
+        }, {});
+        return JSON.stringify(result);
+    }
+
+    restoreBackupJsonString(jsonString: string) {
+        const databaseJson: { [key: string]: any } = JSON.parse(jsonString);
+        Object.entries(databaseJson).map(([dbName, dbData]) => {
+            localStorage.setItem(dbName, JSON.stringify(dbData));
+        })
+    }
+}
+
+class MemoryDatabase<T extends TBasicData> implements IMemoryDatabase {
 
     private dataMemory: { [key: string]: T } = {};
     private initialized: boolean = false;
@@ -33,7 +59,10 @@ class MemoryDatabase<T extends TBasicData> {
 
     constructor(
         private dbName: string
-    ) { }
+    ) {
+        const realStorageName = this.storageName();
+        MemoryDatabaseBackups.listDatabasesMemory[realStorageName] = realStorageName;
+    }
 
     private initialize() {
         if (this.initialized) return;

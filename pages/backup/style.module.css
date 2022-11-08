@@ -1,0 +1,36 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.restoreBackup {
+    width: 200px;
+    height: 200px;
+    border: solid 2px rgba(255, 255, 255, 0.2);
+}
+
+.restoreBackup>* {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+}
+
+.restoreBackup>div {
+    pointer-events: none;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.restoreBackup>input {
+    cursor: pointer;
+    opacity: 0;
+}
